@@ -1,0 +1,22 @@
+name: Sync Brevo Hourly
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # kör varje timme
+  workflow_dispatch:      # tillåter manuell körning
+
+jobs:
+  call-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Supabase Edge Function (sync-to-brevo)
+        env:
+          SUPABASE_FUNCTION_URL: https://lvjptongatymawnqymvc.supabase.co/functions/v1/sync-to-brevo
+        run: |
+          echo "Calling $SUPABASE_FUNCTION_URL"
+          curl --fail -sS -X POST \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_KEY }}" \
+            -H "Content-Type: application/json" \
+            "$SUPABASE_FUNCTION_URL"
+          echo
+          echo "Request succeeded"
